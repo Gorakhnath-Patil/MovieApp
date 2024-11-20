@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Movie Booking API Documentation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #34495e;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        h1,
+        h2 {
+            color: #34495e;
+        }
+
+        code {
+            background-color: #f7f7f7;
+            padding: 5px;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f1f1f1;
+        }
+
+        .note {
+            font-size: 1.1em;
+            color: #e74c3c;
+            background-color: #fef3f3;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .api-section {
+            margin-bottom: 50px;
+        }
+
+        .api-method {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .code-snippet {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+
+        .example-output {
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 1em;
+        }
+
+        footer {
+            background-color: #34495e;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Movie Booking API Documentation</h1>
+        <p>API for managing movie bookings, including available seats and show timings.</p>
+    </header>
+
+    <div class="container">
+        <section class="api-section">
+            <h2>1. Database Setup</h2>
+            <p>Before hitting the APIs, set up the database and tables as follows:</p>
+            <pre class="code-snippet">
+CREATE DATABASE movie_booking;
+USE movie_booking;
+
+CREATE TABLE movies (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    genre VARCHAR(100),
+    show_timing VARCHAR(100),
+    available_seats INT
+);
+
+CREATE TABLE bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_id INT NOT NULL,
+    customer_name VARCHAR(255) NOT NULL,
+    seat_number VARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
+);
+            </pre>
+
+            <h3>Insert Sample Data</h3>
+            <pre class="code-snippet">
+INSERT INTO movies (title, genre, show_timing, available_seats) VALUES
+('Avengers: Endgame', 'Action', '2024-11-20 18:00:00', 100),
+('Inception', 'Sci-Fi', '2024-11-20 21:00:00', 75),
+('Frozen II', 'Animation', '2024-11-20 16:00:00', 50),
+('The Dark Knight', 'Action', '2024-11-21 20:00:00', 80),
+('Interstellar', 'Sci-Fi', '2024-11-21 19:00:00', 60),
+('Joker', 'Drama', '2024-11-22 21:00:00', 40),
+('Spider-Man: No Way Home', 'Action', '2024-11-22 18:00:00', 90),
+('Toy Story 4', 'Animation', '2024-11-23 14:00:00', 70),
+('Parasite', 'Thriller', '2024-11-23 20:00:00', 55),
+('Coco', 'Animation', '2024-11-23 10:00:00', 65),
+('Avengers: Infinity War', 'Action', '2024-11-24 18:00:00', 100),
+('Tenet', 'Sci-Fi', '2024-11-24 21:00:00', 80),
+('The Lion King', 'Animation', '2024-11-24 16:00:00', 40),
+('Black Panther', 'Action', '2024-11-25 19:00:00', 85),
+('The Matrix', 'Sci-Fi', '2024-11-25 20:00:00', 60);
+            </pre>
+        </section>
+
+        <section class="api-section">
+            <h2>2. Available APIs</h2>
+            <p>You can interact with the following endpoints for movie booking functionality:</p>
+
+            <div class="api-method">
+                <h3>GET /api/movies</h3>
+                <p>Fetches all movies in the database.</p>
+                <pre class="code-snippet">
+GET http://localhost:8080/api/movies
+                </pre>
+                <p><strong>Example Response:</strong></p>
+                <div class="example-output">
+                    <pre>
+[
+    {
+        "id": 1,
+        "title": "Avengers: Endgame",
+        "genre": "Action",
+        "show_timing": "2024-11-20 18:00:00",
+        "available_seats": 100
+    },
+    {
+        "id": 2,
+        "title": "Inception",
+        "genre": "Sci-Fi",
+        "show_timing": "2024-11-20 21:00:00",
+        "available_seats": 75
+    }
+    // Other movie data...
+]
+                    </pre>
+                </div>
+            </div>
+
+            <div class="api-method">
+                <h3>GET /api/movies/{id}</h3>
+                <p>Fetches details of a single movie by ID.</p>
+                <pre class="code-snippet">
+GET http://localhost:8080/api/movies/{id}
+                </pre>
+                <p><strong>Example Response:</strong></p>
+                <div class="example-output">
+                    <pre>
+{
+    "id": 1,
+    "title": "Avengers: Endgame",
+    "genre": "Action",
+    "show_timing": "2024-11-20 18:00:00",
+    "available_seats": 100
+}
+                    </pre>
+                </div>
+            </div>
+
+            <div class="api-method">
+                <h3>GET /api/movies/{movieId}/seats</h3>
+                <p>Fetches the current seat status for a movie.</p>
+                <pre class="code-snippet">
+GET http://localhost:8080/api/movies/{movieId}/seats
+                </pre>
+                <p><strong>Example Response:</strong></p>
+                <div class="example-output">
+                    <pre>
+{
+    "available_seats": 75,
+    "booked_seats": 25
+}
+                    </pre>
+                </div>
+            </div>
+
+            <div class="api-method">
+                <h3>POST /api/movies/{movieId}/book</h3>
+                <p>Books a seat for a movie for a given customer. Requires the seat number and customer name.</p>
+                <pre class="code-snippet">
+POST http://localhost:8080/api/movies/{movieId}/book
+Content-Type: application/json
+
+{
+    "customer_name": "John Doe",
+    "seat_number": "A1"
+}
+                </pre>
+                <p><strong>Example Response:</strong></p>
+                <div class="example-output">
+                    <pre>
+{
+    "message": "Seat A1 booked successfully for John Doe.",
+    "booking_id": 101
+}
+                    </pre>
+                </div>
+            </div>
+
+            <div class="api-method">
+                <h3>DELETE /api/bookings/{bookingId}</h3>
+                <p>Cancels a booking by ID.</p>
+                <pre class="code-snippet">
+DELETE http://localhost:8080/api/bookings/{bookingId}
+                </pre>
+                <p><strong>Example Response:</strong></p>
+                <div class="example-output">
+                    <pre>
+{
+    "message": "Booking ID 101 cancelled successfully."
+}
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="api-section">
+            <h2>3. Error Responses</h2>
+            <p>In case of errors, the following responses may occur:</p>
+            <div class="example-output">
+                <pre>
+{
+    "error": "Invalid seat number.",
+    "status": 400
+}
+                </pre>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; For MongoApps Test Project by Gorakhnath</p>
+    </footer>
+
+</body>
+
+</html>
